@@ -23,8 +23,10 @@ func main() {
 	//Rotas API
 	server.GET("/produtos", ProdutoCtrl.ObterProdutos)
 	server.POST("/produto", ProdutoCtrl.CriarProduto)
+	server.PUT("/produto", ProdutoCtrl.AtualizarProduto)
 	server.GET("/produto/:produtoId", ProdutoCtrl.ObterProdutoPorid)
+	server.DELETE("/produto/:produtoId", ProdutoCtrl.ExcluirProdutoPorid)
 
 	//Inicia a o servidor http na porta 8080
-	server.Run(":8000")
+	server.Run(":8080")
 }

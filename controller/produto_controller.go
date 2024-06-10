@@ -60,7 +60,7 @@ func (p *produtoController) ObterProdutoPorid(ctx *gin.Context) {
 		return
 	}
 
-	productId, err := strconv.Atoi(id)
+	productId, err := strconv.ParseInt(id, 10, 64)
 	if err != nil {
 		response := model.Response{
 			Message: "Id do produto precisa ser um numero",
@@ -84,4 +84,52 @@ func (p *produtoController) ObterProdutoPorid(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, product)
+}
+
+func (p *produtoController) AtualizarProduto(ctx *gin.Context) {
+
+	var product model.Produto
+	err := ctx.BindJSON(&product)
+
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, err)
+		return
+	}
+
+	mensagem, err := p.produtoUseCase.AtualizarProduto(product)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, err)
+		return
+	}
+
+	ctx.JSON(http.StatusCreated, mensagem)
+}
+
+func (p *produtoController) ExcluirProdutoPorid(ctx *gin.Context) {
+
+	id := ctx.Param("produtoId")
+	if id == "" {
+		response := model.Response{
+			Message: "Id do produto nao pode ser nulo",
+		}
+		ctx.JSON(http.StatusBadRequest, response)
+		return
+	}
+
+	productId, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		response := model.Response{
+			Message: "Id do produto precisa ser um numero",
+		}
+		ctx.JSON(http.StatusBadRequest, response)
+		return
+	}
+
+	mensagem, err := p.produtoUseCase.ExcluirProdutoPorid(productId)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, err)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, mensagem)
 }

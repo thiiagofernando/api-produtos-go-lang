@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"api-produtos/constantes"
 	"api-produtos/model"
 	"database/sql"
 	"fmt"
@@ -65,7 +66,7 @@ func (pr *ProdutoRepository) InserirProduto(produto model.Produto) (int64, error
 	return id, nil
 
 }
-func (pr *ProdutoRepository) ObterProdutoPorid(id_product int) (*model.Produto, error) {
+func (pr *ProdutoRepository) ObterProdutoPorid(id_product int64) (*model.Produto, error) {
 
 	query, err := pr.connection.Prepare("SELECT * FROM produto WHERE id = $1")
 	if err != nil {
@@ -91,4 +92,46 @@ func (pr *ProdutoRepository) ObterProdutoPorid(id_product int) (*model.Produto, 
 
 	query.Close()
 	return &produto, nil
+}
+
+func (pr *ProdutoRepository) AtualizarProduto(produto model.Produto) (string, error) {
+
+	var id int64
+	query, err := pr.connection.Prepare("UPDATE produto" +
+		" SET nome= $2, preco= $3 " +
+		"WHERE id=$1 ")
+
+	if err != nil {
+		fmt.Println(err)
+		return constantes.MensagemErroAtualizar, err
+	}
+
+	err = query.QueryRow(produto.ID, produto.Nome, produto.Preco).Scan(&id)
+
+	if err != nil {
+		fmt.Println(err)
+		return constantes.MensagemErroAtualizar, err
+	}
+	query.Close()
+	return constantes.MensagemSucessoAtualizar, err
+}
+
+func (pr *ProdutoRepository) ExcluirProdutoPorId(produtoId int64) (string, error) {
+
+	var id int64
+	query, err := pr.connection.Prepare("delete from produto where id = $1 ")
+
+	if err != nil {
+		fmt.Println(err)
+		return constantes.MensagemErroExcluir, err
+	}
+
+	err = query.QueryRow(produtoId).Scan(&id)
+
+	if err != nil {
+		fmt.Println(err)
+		return constantes.MensagemErroExcluir, err
+	}
+	query.Close()
+	return constantes.MensagemSucessoExcluir, err
 }
