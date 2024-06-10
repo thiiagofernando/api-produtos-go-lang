@@ -21,8 +21,10 @@ func main() {
 	ProdutoCtrl := controller.NewProdutoController(ProdutoUseCase)
 
 	//Rotas API
-	server.GET("produto", ProdutoCtrl.GetProdutos)
+	server.GET("/produtos", ProdutoCtrl.ObterProdutos)
+	server.POST("/produto", ProdutoCtrl.CriarProduto)
+	server.GET("/produto/:produtoId", ProdutoCtrl.ObterProdutoPorid)
 
 	//Inicia a o servidor http na porta 8080
-	server.Run(":8080")
+	server.Run(":8000")
 }

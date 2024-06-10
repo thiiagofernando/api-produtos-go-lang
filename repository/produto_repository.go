@@ -44,24 +44,51 @@ func (pr *ProdutoRepository) GetProdutos() ([]model.Produto, error) {
 	return produtoLista, nil
 }
 
-func (pr *ProdutoRepository) InserirProduto(produto model.Produto) (int, error) {
-	
-	var id int
-	query, err:= pr.connection.Prepare("insert into protudo" + 
-						"(nome,preco) values($1, $2) returning id")
+func (pr *ProdutoRepository) InserirProduto(produto model.Produto) (int64, error) {
+
+	var id int64
+	query, err := pr.connection.Prepare("insert into produto" +
+		"(nome,preco) values($1, $2) returning id")
 	if err != nil {
 		fmt.Println(err)
-		return 0,err
+		return 0, err
 	}
 
-	err = query.QueryRow(produto.Nome,produto.Preco).Scan(&id)
+	err = query.QueryRow(produto.Nome, produto.Preco).Scan(&id)
 
 	if err != nil {
 		fmt.Println(err)
-		return 0,err
+		return 0, err
 	}
 	query.Close()
 
-	return id,nil
+	return id, nil
 
+}
+func (pr *ProdutoRepository) ObterProdutoPorid(id_product int) (*model.Produto, error) {
+
+	query, err := pr.connection.Prepare("SELECT * FROM produto WHERE id = $1")
+	if err != nil {
+		fmt.Println(err)
+		return nil, err
+	}
+
+	var produto model.Produto
+
+	err = query.QueryRow(id_product).Scan(
+		&produto.ID,
+		&produto.Nome,
+		&produto.Preco,
+	)
+
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil
+		}
+
+		return nil, err
+	}
+
+	query.Close()
+	return &produto, nil
 }
