@@ -1,7 +1,6 @@
 package repository
 
 import (
-	"api-produtos/constantes"
 	"api-produtos/model"
 	"database/sql"
 	"fmt"
@@ -94,44 +93,26 @@ func (pr *ProdutoRepository) ObterProdutoPorid(id_product int64) (*model.Produto
 	return &produto, nil
 }
 
-func (pr *ProdutoRepository) AtualizarProduto(produto model.Produto) (string, error) {
+func (pr *ProdutoRepository) AtualizarProduto(produtoId int64, nome string, preco float64) bool {
 
-	var id int64
-	query, err := pr.connection.Prepare("UPDATE produto" +
-		" SET nome= $2, preco= $3 " +
-		"WHERE id=$1 ")
-
-	if err != nil {
-		fmt.Println(err)
-		return constantes.MensagemErroAtualizar, err
-	}
-
-	err = query.QueryRow(produto.ID, produto.Nome, produto.Preco).Scan(&id)
+	_, err := pr.connection.Exec("UPDATE produto"+
+		" SET nome= $2, preco= $3 "+
+		"WHERE id=$1 ", produtoId, nome, preco)
 
 	if err != nil {
 		fmt.Println(err)
-		return constantes.MensagemErroAtualizar, err
+		return false
 	}
-	query.Close()
-	return constantes.MensagemSucessoAtualizar, err
+	return true
 }
 
-func (pr *ProdutoRepository) ExcluirProdutoPorId(produtoId int64) (string, error) {
+func (pr *ProdutoRepository) ExcluirProduto(produtoId int64) bool {
 
-	var id int64
-	query, err := pr.connection.Prepare("delete from produto where id = $1 ")
-
-	if err != nil {
-		fmt.Println(err)
-		return constantes.MensagemErroExcluir, err
-	}
-
-	err = query.QueryRow(produtoId).Scan(&id)
+	_, err := pr.connection.Exec("delete from  produto where id = $1", produtoId)
 
 	if err != nil {
 		fmt.Println(err)
-		return constantes.MensagemErroExcluir, err
+		return false
 	}
-	query.Close()
-	return constantes.MensagemSucessoExcluir, err
+	return true
 }

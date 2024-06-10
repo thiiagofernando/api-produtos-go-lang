@@ -1,7 +1,6 @@
 package usecase
 
 import (
-	"api-produtos/constantes"
 	"api-produtos/model"
 	"api-produtos/repository"
 )
@@ -41,22 +40,13 @@ func (pu *ProdutoUseCase) ObterProdutoPorid(id_product int64) (*model.Produto, e
 	return product, nil
 }
 
-func (pu *ProdutoUseCase) AtualizarProduto(produto model.Produto) (string, error) {
+func (pu *ProdutoUseCase) AtualizarProduto(produto model.Produto) bool {
 
-	var mensagem string
-	mensagem, err := pu.repository.AtualizarProduto(produto)
-	if err != nil {
-		return constantes.MensagemErroAtualizar, err
-	}
-
-	return mensagem, nil
+	retorno := pu.repository.AtualizarProduto(produto.ID, produto.Nome, produto.Preco)
+	return retorno
 }
-func (pu *ProdutoUseCase) ExcluirProdutoPorid(id_product int64) (string, error) {
+func (pu *ProdutoUseCase) ExcluirProduto(id_product int64) bool {
 
-	mensagem, err := pu.repository.ExcluirProdutoPorId(id_product)
-	if err != nil {
-		return constantes.MensagemErroExcluir, err
-	}
-
-	return mensagem, nil
+	retorno := pu.repository.ExcluirProduto(id_product)
+	return retorno
 }

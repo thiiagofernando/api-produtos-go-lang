@@ -96,13 +96,13 @@ func (p *produtoController) AtualizarProduto(ctx *gin.Context) {
 		return
 	}
 
-	mensagem, err := p.produtoUseCase.AtualizarProduto(product)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, err)
+	retorno := p.produtoUseCase.AtualizarProduto(product)
+	if retorno != true {
+		ctx.JSON(http.StatusInternalServerError, retorno)
 		return
 	}
 
-	ctx.JSON(http.StatusCreated, mensagem)
+	ctx.JSON(http.StatusOK, retorno)
 }
 
 func (p *produtoController) ExcluirProdutoPorid(ctx *gin.Context) {
@@ -125,11 +125,11 @@ func (p *produtoController) ExcluirProdutoPorid(ctx *gin.Context) {
 		return
 	}
 
-	mensagem, err := p.produtoUseCase.ExcluirProdutoPorid(productId)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, err)
+	retorno := p.produtoUseCase.ExcluirProduto(productId)
+	if retorno != true {
+		ctx.JSON(http.StatusInternalServerError, retorno)
 		return
 	}
 
-	ctx.JSON(http.StatusOK, mensagem)
+	ctx.JSON(http.StatusOK, retorno)
 }
